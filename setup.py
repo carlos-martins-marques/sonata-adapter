@@ -71,7 +71,7 @@ setup(
     keywords='Multi domain',
 
     packages=find_packages(),
-    install_requires=['Flask>=0.12.2', 'flask-restful', 'python-dateutil', 'requests', 'xmlrunner==1.7.7', 'pika', 'coloredlogs'],
+    install_requires=['Flask>=0.12.2', 'flask-restful', 'python-dateutil', 'requests', 'xmlrunner==1.7.7', 'pika', 'coloredlogs', 'MarkupSafe==1.1.1'],
     #setup_requires=['pytest-runner'],
 
     # To provide executable scripts, use entry points in preference to the
