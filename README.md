@@ -53,10 +53,10 @@ Each SONATA component has its API definition, the next sub-setions present a bas
 | Action  | HTTP method  | Endpoint |
 |---|---|---|
 | CREATE A NETWORK SLICE IDENTIFIER  | POST  | /api/v1/ns  |
-| INSTANTIATE A NETWORK SLICE | PUT  | /api/v1/ns/<nsiId>/action/instantiate  |
-| RESQUEST THE INFORMATION OF A NETWORK SLICE INSTANTIATION  | GET  | /api/v1/ns/<nsiId>|
+| INSTANTIATE A NETWORK SLICE | PUT  | /api/v1/ns/`<nsiId>`/action/instantiate  |
+| RESQUEST THE INFORMATION OF A NETWORK SLICE INSTANTIATION  | GET  | /api/v1/ns/`<nsiId>`|
 | RESQUEST THE INFORMATION OF ALL NETWORK SLICE INSTANTIATIONS  | GET  | /api/v1/ns  |
-| TERMINATE A NETWORK SLICE INSTANTIATION  | PUT  | /api/v1/ns/<nsiId>/action/terminate|
+| TERMINATE A NETWORK SLICE INSTANTIATION  | PUT  | /api/v1/ns/`<nsiId>`/action/terminate|
 
 
 ## Database
