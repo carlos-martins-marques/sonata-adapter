@@ -78,6 +78,6 @@ setup(
     # "scripts" keyword. Entry points provide cross-platform support and allow
     # pip to create the appropriate form of executable for the target platform.
     #entry_points={
-    #    'console_scripts': ['tng-slice-mngr=tng_slice_mngr.__main__:main'],
+    #    'console_scripts': ['sonata_adapter=sonata_adapter.__main__:main'],
     #},
 )
