@@ -71,7 +71,33 @@ setup(
     keywords='Multi domain',
 
     packages=find_packages(),
-    install_requires=['Flask>=0.12.2', 'flask-restful', 'python-dateutil', 'requests', 'xmlrunner==1.7.7', 'pika', 'coloredlogs', 'MarkupSafe==1.1.1'],
+    install_requires=['Flask==1.1.1', 'flask-restful==0.3.7', 'python-dateutil==2.8.0', 'requests==2.22.0', 'xmlrunner==1.7.7', 'pika==1.1.0', 'coloredlogs==10.0', 'MarkupSafe==1.1.1', 'jinja2==2.10.3', 'itsdangerous==1.1.0'],
+
+    #aniso8601 (8.0.0)
+    #certifi (2019.11.28)
+    #chardet (3.0.4)
+    #Click (7.0)
+    #coloredlogs (10.0)
+    #Flask (1.1.1)
+    #Flask-RESTful (0.3.7)
+    #humanfriendly (4.18)
+    #idna (2.8)
+    #itsdangerous (1.1.0)
+    #Jinja2 (2.10.3)
+    #MarkupSafe (1.1.1)
+    #pika (1.1.0)
+    #pip (9.0.1)
+    #python-dateutil (0.0.0)
+    #pytz (2019.3)
+    #requests (2.22.0)
+    #setuptools (36.6.0)
+    #six (1.13.0)
+    #tng-slice-mngr (0.1)
+    #urllib3 (1.25.7)
+    #Werkzeug (0.16.0)
+    #wheel (0.30.0)
+    #xmlrunner (1.7.7)
+
     #setup_requires=['pytest-runner'],
 
     # To provide executable scripts, use entry points in preference to the
