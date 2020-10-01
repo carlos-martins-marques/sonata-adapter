@@ -387,7 +387,7 @@ def nsi_placement(nsi_json, nst_json):
   vims_list = sbi.get_vims_info()
 
   # validates if the incoming vim_list is empty (return 500) or not (follow)
-  if not vims_list['vim_list']:
+  if not 'vim_list' in vims_list:
     return_msg = {}
     return_msg['error'] = "Not found any VIM information, register one to the SP."
     return return_msg, 500

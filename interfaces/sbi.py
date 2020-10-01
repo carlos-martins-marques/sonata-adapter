@@ -112,7 +112,7 @@ def get_vims_info():
   if (response.status_code == 200):
       jsonresponse = json.loads(response.text)
   else:
-      jsonresponse = {'http_code': response.status_code,'message': response.json()}
+      jsonresponse = {'http_code': response.status_code,'message': response.reason}
       LOG.info(" Retrieving VIMs information FAILED: " +str(jsonresponse))
 
   return jsonresponse
