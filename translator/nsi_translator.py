@@ -554,7 +554,7 @@ def translate_nsi_from_sonata_to_vs(nsi_sonata):
   nsi_vs['instantiationLevelId'] = ""
   nsi_vs['nfvNsId'] = ""
   nsi_vs['soManaged'] = False
-  nsi_vs['networkSliceSubnetInstances'] = nsi_sonata['_instantiation_params']
+  nsi_vs['networkSliceSubnetInstances'] = None
   nsi_vs['tenantId'] = ""
   nsi_vs['status'] = translate_status_from_sonata_to_vs(nsi_sonata['nsi-status'])
   nsi_vs['errorMessage'] = nsi_sonata['errorLog']
