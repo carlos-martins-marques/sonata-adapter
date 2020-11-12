@@ -333,7 +333,7 @@ def create_nsi(nsi_json):
    
   # sending back the response
 
-  return (newNsiId, 200)
+  return (newNsiId, 201)
 
  
   
