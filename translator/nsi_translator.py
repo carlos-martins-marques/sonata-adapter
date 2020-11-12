@@ -378,7 +378,7 @@ def instantiate_nsi(nsi_json):
   thread_ns_instantiation.start()
 
 
-  return ({},200)
+  return ({},202)
   
 # does the NS placement based on the available VIMs resources & the required of each NS.
 def nsi_placement(nsi_json, nst_json):
@@ -440,7 +440,7 @@ def terminate_nsi(nsiName, TerminOrder):
           thread_ns_termination = thread_ns_terminate(terminate_nsi)
           thread_ns_termination.start()
 
-          terminate_value = 200
+          terminate_value = 202
             
         else:
           terminate_nsi['errorLog'] = "This NSI is either terminated or being terminated."
