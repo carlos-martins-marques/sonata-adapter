@@ -318,6 +318,59 @@ class thread_ns_terminate(Thread):
     LOG.info("Termination Step: Informing VS about the correct end of Network Slice with ID: "+str(self.NSI['id']))
     self.update_nsi_notify_terminate()
 
+# SEND NETWORK SLICE (NS) CONFIGURATION REQUEST
+## Objctive: send the ns configuration request 2 ssm
+## Params: nsiId (uuid within the incoming request URL) and parameters
+class thread_ns_configure(Thread):
+  def __init__(self, NSI):
+    Thread.__init__(self)
+    self.NSI = NSI
+  
+  def send_configuration_requests(self):
+    LOG.info("Configurating Slice: ")
+
+    # calls the function towards the GTK
+    configuration_response = sbi.ws_configure(self.NSI['parameters'])
+
+    return configuration_response[0], configuration_response[1]
+  
+  def update_nsi_notify_configure(self):
+   """  """
+
+  def run(self):
+
+    # acquires mutex to have unique access to the nsi (rpositories)
+    mutex_slice2db_access.acquire()
+    
+    # sends each of the termination requests
+    LOG.info("Configuration Step: Configuring Network Slice Instantiation.")
+
+    # requests to configure a NSI
+    configuraion_resp = self.send_configuration_requests()
+    if configuraion_resp[1] != 202:
+      self.NSI['nsi-status'] = 'ERROR'
+      self.NSI['errorLog'] = 'ERROR when configuring '
+
+    
+    # releases mutex for any other thread to acquire it
+    mutex_slice2db_access.release()
+
+    if self.NSI['nsi-status'] != 'ERROR':
+        
+      self.NSI['nsi-status'] = "CONFIGURATED"
+      nsi_configurated = True
+      
+      # if slice is configurated or error, break the while loop to notify the GTK
+      LOG.info("Network Slice Configuration request processed for Network Slice with ID: "+str(self.NSI['id']))
+    
+      if not nsi_configurated:
+        self.NSI['nsi-status'] = 'ERROR'
+        self.NSI['errorLog'] = 'ERROR when configurating with timeout'
+    
+    # Notifies the VS that the Network Slice configuartion process is done (either complete or error)
+    LOG.info("Configuration Step: Informing VS about the correct end of Network Slice with ID: "+str(self.NSI['id']))
+    self.update_nsi_notify_configure()
+
 
 ################################ NSI CREATION SECTION ##################################
 # 1 step: create_nsi (with its internal functions)
@@ -465,6 +518,11 @@ def get_nsi(nsiName):
     LOG.info("Retrieving Network Slice Instance with ID: " +str(uuid))
     nsirepo_jsonresponse = sbi.get_saved_nsi(uuid)
     if (nsirepo_jsonresponse):
+
+      #TODO If need to get data from ssm/fsm
+      if (True):
+        nsirepo_jsonresponse['parameters'] = sbi.ws_get_info(uuid)
+
       # Translate the response
       new_nsirepo_jsonresponse = translate_nsi_from_sonata_to_vs(nsirepo_jsonresponse)
       return (new_nsirepo_jsonresponse, 200)
@@ -559,6 +617,7 @@ def translate_nsi_from_sonata_to_vs(nsi_sonata):
   nsi_vs['status'] = translate_status_from_sonata_to_vs(nsi_sonata['nsi-status'])
   nsi_vs['errorMessage'] = nsi_sonata['errorLog']
   nsi_vs['nfvNsUrl'] = ""
+  nsi_vs['parameters'] = nsi_sonata['parameters']
 
   """ nsi_vs = nsi_sonata """
 
@@ -585,3 +644,49 @@ def translate_status_from_sonata_to_vs(status_sonata):
     status_vs = status_sonata
 
   return status_vs
+
+
+  ########################################## NSI CONFIGURE SECTION #######################################
+# configure_nsi
+# Does all the process to configure the NSI
+def configure_nsi(nsiName, nsi_json):
+  #LOG.info("Updating the Network Slice Record for the termination procedure.")
+  mutex_slice2db_access.acquire()
+  try:
+    # Get the uuid form the name provided
+    uuid = sbi.get_nsi_id_from_name(nsiName)
+    if (uuid):
+      configure_nsi = sbi.get_saved_nsi(uuid)
+      if configure_nsi:
+        # if nsi is in INSTANTIATED
+        if configure_nsi['nsi-status'] in ["INSTANTIATED"]:
+          configure_nsi['id'] = configure_nsi['uuid']
+          del configure_nsi['uuid']
+        
+          configure_nsi['terminateTime'] = str(datetime.datetime.now().isoformat())
+          #configure_nsi['sliceCallback'] = nsiName['callback']
+          configure_nsi['nsi-status'] = "CONFIGURING"
+
+          # Add parameters information from json request
+          configure_nsi['parameters'] = nsiName['parameters']
+
+          # starts the thread to configure while sending back the response
+          LOG.info("Starting the configuration procedure.")
+          thread_ns_configuration = thread_ns_configure(configure_nsi)
+          thread_ns_configuration.start()
+          thread_ns_configuration.join()
+          configure_value = 202
+            
+        else:
+          configure_nsi['errorLog'] = "This NSI is not in instantiated or configurated status."
+          configure_value = 404
+      else:
+        configure_nsi['errorLog'] = "There is no NSIR in the db."
+        configure_value = 404
+    else:
+      configure_nsi = {}
+      configure_nsi['errorLog'] = "There is no NSIR in the db."
+      configure_value = 404
+  finally:
+    mutex_slice2db_access.release()
+    return (configure_nsi, configure_value)

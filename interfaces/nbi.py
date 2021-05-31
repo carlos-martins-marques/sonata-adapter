@@ -170,6 +170,17 @@ def get_slice_instance(name):
 
   return jsonify(returnedNSI[0]), returnedNSI[1]
 
-
+# Configure a NetSlice instances (NSI)
+@app.route(API_ROOT+API_VERSION+API_NS+'/<name>/action/configure', methods=['PUT'])
+def configure_slice_instance(name):
+  LOG.info("Request to configure a Network Slice Instantiation with the following information: " + str(request.json))
+  
+  # validates the fields with uuids (if they are right UUIDv4 format), 400 Bad request / 201 ok
+  configuring_nsi = json_validator.validate_configure_instantiation(request.json)
+  
+  if (configuring_nsi[1] == 200):
+    configuring_nsi = nsi_translator.configure_nsi(name, request.json)
+  
+  return jsonify(configuring_nsi[0]), configuring_nsi[1]
 
 

@@ -35,17 +35,31 @@
 
 import os, logging, json
 
+from tornado import websocket, web, ioloop, httpserver
+
 from interfaces.nbi import app
 
+from interfaces.sbi import server_ws
+
 from logger import TangoLogger
+
+import threading
+
+import asyncio
 
 #Log definition to make the slice logs idetified among the other possible 5GTango components.
 LOG = TangoLogger.getLogger(__name__, log_level=logging.DEBUG, log_json=True)
 TangoLogger.getLogger("sonataAdapter:main", logging.DEBUG, log_json=True)
 LOG.setLevel(logging.DEBUG)
 
+def server_ws_thread():
+  asyncio.set_event_loop(asyncio.new_event_loop())
+  http_server = httpserver.HTTPServer(server_ws)
+  http_server.listen(4001)
+  ioloop.IOLoop.instance().start()
+
 ########################################### MAIN SERVER FUNCTION ############################################
 if __name__ == '__main__':
-
+  threading.Thread(target=server_ws_thread).start()
   # RUN MAIN SERVER THREAD
   app.run(debug=True, host='0.0.0.0', port=os.environ.get("SONATA_ADAPTER_PORT"))

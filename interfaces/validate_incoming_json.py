@@ -84,3 +84,13 @@ def validate_terminate_instantiation (jsonData):
       returnData["missing_field"] = "Check if you request has a nsiId."
       LOG.info('FormValidator NSI_Error: ' + str(returnData))
       return (returnData, 400)
+
+# Validates the incoming json to configure a Network Slice Instantiation process.
+def validate_configure_instantiation (jsonData):
+  if 'parameters' in jsonData and 'nsiId' in jsonData:
+    returnData["missing_field"] = "Everything is OK!!"
+    return (returnData, 200)
+  else:
+      returnData["missing_field"] = "Check if you request has a nstId and a nsiId."
+      LOG.info('FormValidator NSI_Error: ' + str(returnData))
+      return (returnData, 400)

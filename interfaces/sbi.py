@@ -35,6 +35,17 @@
 """
 
 import os, requests, json, logging
+
+import asyncio
+
+import time
+
+import uuid
+
+from tornado import websocket, web, ioloop, httpserver
+
+from interfaces.client_ws import client_ws_thread
+
 from logger import TangoLogger
 
 JSON_CONTENT_HEADER = {'Content-Type':'application/json'}
@@ -194,6 +205,25 @@ def get_nsi_id_from_name(name):
       for nsi_item in nsi_list:
         if nsi_item['name'] == name:
           return nsi_item['uuid']
+
+
+# Web socket to send requests to FSM/SSM, to CONFIGURE Network Slice instance
+def ws_configure(parameters):
+
+  # TODO
+  dict_message={"name":"sonata_adaptor", "id":uuid.uuid4(), "action":"config","parameters":parameters}
+
+  messageDict = client_ws_thread(dict_message)
+  return ({"message": messageDict['message']},202)
+
+
+# Web socket to send requests to FSM/SSM, to get information from VNF of Network Slice instance
+def ws_get_info(uuid):
+  # TODO
+  dict_message={"name":"sonata_adaptor", "id":uuid.uuid4(), "action":"get_config"}
+
+  messageDict = client_ws_thread(dict_message)
+  return (messageDict['parameters'])
 
 
 ################################# NETWORK SLICE DESCRIPTORS #####################################
