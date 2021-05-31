@@ -39,7 +39,7 @@ from tornado import websocket, web, ioloop, httpserver
 
 from interfaces.nbi import app
 
-from interfaces.sbi import server_ws
+from interfaces.server_ws import server_ws
 
 from logger import TangoLogger
 
