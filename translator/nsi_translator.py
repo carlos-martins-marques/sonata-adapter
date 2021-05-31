@@ -617,7 +617,10 @@ def translate_nsi_from_sonata_to_vs(nsi_sonata):
   nsi_vs['status'] = translate_status_from_sonata_to_vs(nsi_sonata['nsi-status'])
   nsi_vs['errorMessage'] = nsi_sonata['errorLog']
   nsi_vs['nfvNsUrl'] = ""
-  nsi_vs['parameters'] = nsi_sonata['parameters']
+  if 'parameters' in nsi_sonata:
+    nsi_vs['parameters'] = nsi_sonata['parameters']
+  else:
+    nsi_vs['parameters'] = ""
 
   """ nsi_vs = nsi_sonata """
 
