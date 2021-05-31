@@ -136,7 +136,7 @@ def connectPortal(url, argv):
 
 def client_ws_thread(argv):
     
-    url = 'ws://localhost:4001/ssm'
+    url = 'ws://localhost:4002/ssm'
     if len(argv) < 1:   
         LOG.error("Need to include a parameter ")
         sys.exit()

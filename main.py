@@ -55,7 +55,7 @@ LOG.setLevel(logging.DEBUG)
 def server_ws_thread():
   asyncio.set_event_loop(asyncio.new_event_loop())
   http_server = httpserver.HTTPServer(server_ws)
-  http_server.listen(4001)
+  http_server.listen(4002)
   ioloop.IOLoop.instance().start()
 
 ########################################### MAIN SERVER FUNCTION ############################################
