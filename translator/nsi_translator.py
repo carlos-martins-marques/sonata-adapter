@@ -666,12 +666,12 @@ def configure_nsi(nsiName, nsi_json):
           configure_nsi['id'] = configure_nsi['uuid']
           del configure_nsi['uuid']
         
-          configure_nsi['terminateTime'] = str(datetime.datetime.now().isoformat())
+          configure_nsi['configureTime'] = str(datetime.datetime.now().isoformat())
           #configure_nsi['sliceCallback'] = nsiName['callback']
           configure_nsi['nsi-status'] = "CONFIGURING"
 
           # Add parameters information from json request
-          configure_nsi['parameters'] = nsiName['parameters']
+          configure_nsi['parameters'] = nsi_json['parameters']
 
           # starts the thread to configure while sending back the response
           LOG.info("Starting the configuration procedure.")

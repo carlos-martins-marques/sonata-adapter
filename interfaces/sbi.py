@@ -211,7 +211,7 @@ def get_nsi_id_from_name(name):
 def ws_configure(parameters):
 
   # TODO
-  dict_message={"name":"sonata_adaptor", "id":str(uuid.uuid4()), "action":"config","parameters":parameters}
+  dict_message={"name":"sonata_adaptor", "id":str(uuid.uuid4()), "action":"config","parameters":str(parameters)}
 
   messageDict = client_ws_thread(dict_message)
   return ({"message": messageDict['message']},202)
