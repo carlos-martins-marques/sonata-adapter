@@ -59,28 +59,28 @@ LOG.setLevel(logging.DEBUG)
 ######################################### URLs PREPARATION #########################################
 # Returns the last URL version to send requests to the Catalogues Docker
 def get_url_catalogues():
-  #ip_address = os.environ.get("SONATA_CAT")
-  #port = os.environ.get("SONATA_CAT_PORT")
-  ip_address = "193.136.92.119"
-  port = "4011"
+  ip_address = os.environ.get("SONATA_CAT")
+  port = os.environ.get("SONATA_CAT_PORT")
+  #ip_address = "193.136.92.119"
+  #port = "4011"
   base_url = 'http://'+ip_address+':'+port
   return base_url
     
 # Prepares the URL_requests to manage Network Services instantiations belonging to the NST/NSI
 def get_url_sp_gtk():
-  #ip_address = os.environ.get("SONATA_GTK_SP")
-  #port = os.environ.get("SONATA_GTK_SP_PORT")
-  ip_address = "193.136.92.119"
-  port = "5000"
+  ip_address = os.environ.get("SONATA_GTK_SP")
+  port = os.environ.get("SONATA_GTK_SP_PORT")
+  #ip_address = "193.136.92.119"
+  #port = "5000"
   base_url = 'http://'+ip_address+':'+port
   return base_url
 
 # Returns the last URL version to send requests to the Repositories Docker
 def get_url_repositories():
-    #ip_address = os.environ.get("SONATA_REP")
-    #port = os.environ.get("SONATA_REP_PORT")
-    ip_address = "193.136.92.119"
-    port = "4012"
+    ip_address = os.environ.get("SONATA_REP")
+    port = os.environ.get("SONATA_REP_PORT")
+    #ip_address = "193.136.92.119"
+    #port = "4012"
     base_url = 'http://'+ip_address+':'+port
     return base_url
 
@@ -211,16 +211,16 @@ def get_nsi_id_from_name(name):
 def ws_configure(parameters):
 
   # TODO
-  dict_message={"name":"sonata_adaptor", "id":uuid.uuid4(), "action":"config","parameters":parameters}
+  dict_message={"name":"sonata_adaptor", "id":str(uuid.uuid4()), "action":"config","parameters":parameters}
 
   messageDict = client_ws_thread(dict_message)
   return ({"message": messageDict['message']},202)
 
 
 # Web socket to send requests to FSM/SSM, to get information from VNF of Network Slice instance
-def ws_get_info(uuid):
+def ws_get_info(sliceUuid):
   # TODO
-  dict_message={"name":"sonata_adaptor", "id":uuid.uuid4(), "action":"get_config"}
+  dict_message={"name":"sonata_adaptor", "id":str(uuid.uuid4()), "action":"get_config"}
 
   messageDict = client_ws_thread(dict_message)
   return (messageDict['parameters'])
