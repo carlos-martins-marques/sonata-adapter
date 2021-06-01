@@ -72,7 +72,7 @@ class Client():
         try:
             
             #toSend = { "name": sv, "id": sv+"_SSM_0", "sfuuid": sv+"_service_id" , "action": "registry" }
-            toSend = argv
+            toSend = argv.copy()
             toSend['action'] = "registry"
             toSendJson = json.dumps(toSend)
             LOG.info("Sending register: " + str(toSendJson))

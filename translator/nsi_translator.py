@@ -653,8 +653,8 @@ def translate_status_from_sonata_to_vs(status_sonata):
 # configure_nsi
 # Does all the process to configure the NSI
 def configure_nsi(nsiName, nsi_json):
-  #LOG.info("Updating the Network Slice Record for the termination procedure.")
-  mutex_slice2db_access.acquire()
+  #LOG.info("Updating the Network Slice Record for the configuration procedure.")
+  #mutex_slice2db_access.acquire()
   try:
     # Get the uuid form the name provided
     uuid = sbi.get_nsi_id_from_name(nsiName)
@@ -691,5 +691,5 @@ def configure_nsi(nsiName, nsi_json):
       configure_nsi['errorLog'] = "There is no NSIR in the db."
       configure_value = 404
   finally:
-    mutex_slice2db_access.release()
+    #mutex_slice2db_access.release()
     return (configure_nsi, configure_value)
