@@ -122,7 +122,7 @@ class Client():
 
     @gen.coroutine
     def run(self):
-        self.ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=10), self.ioloop.stop())
+        self.ioloop.add_timeout(datetime.timedelta(seconds=10), self.ioloop.stop)
         while True:
             msg = yield self.ws.read_message()
             if msg is not None:

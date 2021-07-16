@@ -223,7 +223,10 @@ def ws_get_info(sliceUuid):
   dict_message={"name":"sonata_adaptor", "id":str(uuid.uuid4()), "action":"get_config"}
 
   messageDict = client_ws_thread(dict_message)
-  return (messageDict['parameters'])
+  if messageDict != "":
+    return (messageDict['parameters'])
+  else:
+    return messageDict
 
 
 ################################# NETWORK SLICE DESCRIPTORS #####################################
