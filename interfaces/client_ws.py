@@ -42,6 +42,7 @@ import threading
 import asyncio
 import logging
 import time
+import datetime
 
 LOG = logging.getLogger(__name__)
 LOG.setLevel(logging.DEBUG)
@@ -121,6 +122,7 @@ class Client():
 
     @gen.coroutine
     def run(self):
+        self.ioloop.IOLoop.current().add_timeout(datetime.timedelta(seconds=10), self.ioloop.stop())
         while True:
             msg = yield self.ws.read_message()
             if msg is not None:
