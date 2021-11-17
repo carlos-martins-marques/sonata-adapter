@@ -708,4 +708,4 @@ def configure_nsi(nsiName, nsi_json):
       configure_value = 404
   finally:
     #mutex_slice2db_access.release()
-    return (configure_nsi, configure_value)
+    return ({}, configure_value)

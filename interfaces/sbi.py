@@ -224,7 +224,7 @@ def ws_get_info(sliceUuid):
 
   messageDict = client_ws_thread(dict_message)
   if 'parameters' in messageDict:
-    return (json.dumps(messageDict['parameters']))
+    return (messageDict['parameters'])
   else:
     return messageDict
 
