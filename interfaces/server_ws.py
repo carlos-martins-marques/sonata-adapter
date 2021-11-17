@@ -74,10 +74,12 @@ class WSHandler(websocket.WebSocketHandler):
         for key, value in tunnelLiveWebSockets.items():
             if self == value:
                 tunnelLiveWebSockets.pop(key)
+                LOG.info("Removed id: " + key)
                 break
         for key, value in sonataAdaptorLiveWebSockets.items():
             if self == value:
                 sonataAdaptorLiveWebSockets.pop(key)
+                LOG.info("Removed id: " + key)
                 break
     def check_origin(self, origin):
         return True
