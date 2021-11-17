@@ -35,7 +35,7 @@
 
 import logging, datetime, uuid, time, json
 from threading import Thread, Lock
-
+import database.database as database
 import interfaces.sbi as sbi
 from logger import TangoLogger
 
@@ -47,6 +47,8 @@ mutex_slice2db_access = Lock()
 LOG = TangoLogger.getLogger(__name__, log_level=logging.DEBUG, log_json=True)
 TangoLogger.getLogger("sonataAdapter:nsi_translator", logging.DEBUG, log_json=True)
 LOG.setLevel(logging.DEBUG)
+
+db = database.slice_database()
 
 ################################## THREADs to manage slice requests #################################
 # SEND NETWORK SLICE (NS) INSTANTIATION REQUEST
@@ -493,6 +495,10 @@ def terminate_nsi(nsiName, TerminOrder):
           thread_ns_termination = thread_ns_terminate(terminate_nsi)
           thread_ns_termination.start()
 
+          if db.get_slice(nsiName) is not None:
+            db.del_slice(nsiName)
+
+
           terminate_value = 202
             
         else:
@@ -524,7 +530,7 @@ def get_nsi(nsiName):
         nsirepo_jsonresponse['parameters'] = sbi.ws_get_info(uuid)
 
       # Translate the response
-      new_nsirepo_jsonresponse = translate_nsi_from_sonata_to_vs(nsirepo_jsonresponse)
+      new_nsirepo_jsonresponse = translate_nsi_from_sonata_to_vs(nsiName, nsirepo_jsonresponse)
       return (new_nsirepo_jsonresponse, 200)
     else:
       return_msg = {}
@@ -599,7 +605,7 @@ def get_all_nsi():
 
 } """
 
-def translate_nsi_from_sonata_to_vs(nsi_sonata):
+def translate_nsi_from_sonata_to_vs(nsiName, nsi_sonata):
   nsi_vs = {}
 
   nsi_vs['name'] = nsi_sonata['name']
@@ -614,7 +620,13 @@ def translate_nsi_from_sonata_to_vs(nsi_sonata):
   nsi_vs['soManaged'] = False
   nsi_vs['networkSliceSubnetInstances'] = None
   nsi_vs['tenantId'] = ""
-  nsi_vs['status'] = translate_status_from_sonata_to_vs(nsi_sonata['nsi-status'])
+
+  status = db.get_status_slice(nsiName)
+  if status is not None:
+    nsi_vs['status'] = status
+  else:
+    nsi_vs['status'] = translate_status_from_sonata_to_vs(nsi_sonata['nsi-status'])
+
   nsi_vs['errorMessage'] = nsi_sonata['errorLog']
   nsi_vs['nfvNsUrl'] = ""
   if 'parameters' in nsi_sonata:
@@ -663,6 +675,9 @@ def configure_nsi(nsiName, nsi_json):
       if configure_nsi:
         # if nsi is in INSTANTIATED
         if configure_nsi['nsi-status'] in ["INSTANTIATED"]:
+
+          db.add_slice("CONFIGURING", nsiName)
+
           configure_nsi['id'] = configure_nsi['uuid']
           del configure_nsi['uuid']
         
@@ -679,7 +694,8 @@ def configure_nsi(nsiName, nsi_json):
           thread_ns_configuration.start()
           thread_ns_configuration.join()
           configure_value = 202
-            
+
+          db.update_status_slice("CONFIGURED", nsiName)  
         else:
           configure_nsi['errorLog'] = "This NSI is not in instantiated or configurated status."
           configure_value = 404
