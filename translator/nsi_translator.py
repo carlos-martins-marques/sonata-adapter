@@ -549,7 +549,7 @@ def get_all_nsi():
     new_nsirepo_jsonresponse = []
     # Translate the response
     for nsi in nsirepo_jsonresponse:
-      new_nsi = translate_nsi_from_sonata_to_vs(nsi)
+      new_nsi = translate_nsi_from_sonata_to_vs(None,nsi)
       new_nsirepo_jsonresponse.append(new_nsi)
     return (new_nsirepo_jsonresponse, 200)
   else:
