@@ -118,7 +118,7 @@ class WSHandler(websocket.WebSocketHandler):
                 #    LOG.info(name + ": send reply message to Sonata Adaptor " + toSendJson)
 
                 #    sonataAdaptorLiveWebSockets[id].write_message(toSendJson)
-                LOG.info(name + ": don't send reply message to Sonata Adaptor " + toSendJson)
+                LOG.info(name + ": don't send reply message to Sonata Adaptor ")
 
             # If the sender is the Sonata Adaptor
             elif name == names[1]:
