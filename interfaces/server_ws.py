@@ -48,15 +48,16 @@ JSON_CONTENT_HEADER = {'Content-Type':'application/json'}
 
 #Log definition to make the slice logs idetified among the other possible 5GTango components.
 LOG = TangoLogger.getLogger(__name__, log_level=logging.DEBUG, log_json=True)
-TangoLogger.getLogger("sonataAdapter:sbi", logging.DEBUG, log_json=True)
+TangoLogger.getLogger("sonataAdapter:server_ws", logging.DEBUG, log_json=True)
 LOG.setLevel(logging.DEBUG)
 
 ################################# SERVER WEB SOCKET #####################################
 
-names = [ 'tunnel', 'sonata_adaptor' ]
-actions = [ 'registry', 'config', 'get_config']
+names = [ 'tunnel', 'mtd', 'sonata_adaptor' ]
+actions = [ 'registry', 'config', 'get_config', 'deregistry']
 ssmId = {}
 tunnelLiveWebSockets = {}
+mtdLiveWebSockets = {}
 sonataAdaptorLiveWebSockets = {}
 
 
@@ -74,6 +75,11 @@ class WSHandler(websocket.WebSocketHandler):
         for key, value in tunnelLiveWebSockets.items():
             if self == value:
                 tunnelLiveWebSockets.pop(key)
+                LOG.info("Removed id: " + key)
+                break
+        for key, value in mtdLiveWebSockets.items():
+            if self == value:
+                mtdLiveWebSockets.pop(key)
                 LOG.info("Removed id: " + key)
                 break
         for key, value in sonataAdaptorLiveWebSockets.items():
@@ -103,13 +109,17 @@ class WSHandler(websocket.WebSocketHandler):
                 ssmId[id]=sfuuid
                 tunnelLiveWebSockets[sfuuid] = self
             elif name == names[1]:
+                sfuuid = messageDict['sfuuid']
+                ssmId[id]=sfuuid
+                mtdLiveWebSockets[sfuuid] = self
+            elif name == names[2]:
                 sonataAdaptorLiveWebSockets[id] = self
 
         # configuration
         elif action == actions[1]:
 
             #TODO 
-            # If the sender is the FSM
+            # If the sender is the FSM Tunnel
             if name == names[0]:
                 #for id in sonataAdaptorLiveWebSockets:
                     
@@ -120,15 +130,35 @@ class WSHandler(websocket.WebSocketHandler):
                 #    sonataAdaptorLiveWebSockets[id].write_message(toSendJson)
                 LOG.info(name + ": don't send reply message to Sonata Adaptor ")
 
-            # If the sender is the Sonata Adaptor
+            # If the sender is the FSM MTD
             elif name == names[1]:
-                for sfuuid in tunnelLiveWebSockets:
+                #for id in sonataAdaptorLiveWebSockets:
                     
-                    toSend = { "name": names[0], "id": sfuuid, "action": action, "parameters": messageDict['parameters']}
-                    toSendJson = json.dumps(toSend)
-                    LOG.info(name + ": send new message to FSM " + toSendJson)
+                #    toSend = { "name": names[1], "id": id, "action": actions[2], "message": "Configuration OK"}
+                #    toSendJson = json.dumps(toSend)
+                #    LOG.info(name + ": send reply message to Sonata Adaptor " + toSendJson)
 
-                    tunnelLiveWebSockets[sfuuid].write_message(toSendJson)
+                #    sonataAdaptorLiveWebSockets[id].write_message(toSendJson)
+                LOG.info(name + ": don't send reply message to Sonata Adaptor ")
+
+            # If the sender is the Sonata Adaptor
+            elif name == names[2]:
+                if (messageDict['fsm'] == names[0]): 
+                    for sfuuid in tunnelLiveWebSockets:
+                        
+                        toSend = { "name": names[0], "id": sfuuid, "action": action, "parameters": messageDict['parameters']}
+                        toSendJson = json.dumps(toSend)
+                        LOG.info(name + ": send new message to FSM " + names[0] + " " + toSendJson)
+
+                        tunnelLiveWebSockets[sfuuid].write_message(toSendJson)
+                elif (messageDict['fsm'] == names[1]): 
+                    for sfuuid in mtdLiveWebSockets:
+                        
+                        toSend = { "name": names[1], "id": sfuuid, "action": action, "parameters": messageDict['parameters']}
+                        toSendJson = json.dumps(toSend)
+                        LOG.info(name + ": send new message to FSM " + names[1] + " " + toSendJson)
+
+                        mtdLiveWebSockets[sfuuid].write_message(toSendJson)
 
                 toSend = { "name": name, "id": id, "action": action, 
                         "message": "Configuration OK"}
@@ -144,20 +174,36 @@ class WSHandler(websocket.WebSocketHandler):
             if name == names[0]:
                 for id in sonataAdaptorLiveWebSockets:
                     
-                    toSend = { "name": names[1], "id": id, "action": actions[2], "parameters": messageDict['parameters']}
+                    toSend = { "name": names[2], "id": id, "action": actions[2], "parameters": messageDict['parameters']}
                     toSendJson = json.dumps(toSend)
                     LOG.info(name + ": send reply message to Sonata Adaptor" + toSendJson)
 
                     sonataAdaptorLiveWebSockets[id].write_message(toSendJson)
             # If the sender is the Sonata Adaptor
-            elif name == names[1]:
-                for sfuuid in tunnelLiveWebSockets:
-                    
-                    toSend = { "name": names[0], "id": sfuuid, "action": action}
-                    toSendJson = json.dumps(toSend)
-                    LOG.info(name + ": send new message to FSM " + toSendJson)
+            elif name == names[2]:
+                if (messageDict['fsm'] == names[0]): 
+                    for sfuuid in tunnelLiveWebSockets:
+                        
+                        toSend = { "name": names[0], "id": sfuuid, "action": action}
+                        toSendJson = json.dumps(toSend)
+                        LOG.info(name + ": send new message to FSM " + names[0] + " " + toSendJson)
 
-                    tunnelLiveWebSockets[sfuuid].write_message(toSendJson)
+                        tunnelLiveWebSockets[sfuuid].write_message(toSendJson)
+                elif (messageDict['flag'] == names[1]): 
+                    for sfuuid in mtdLiveWebSockets:
+                        
+                        toSend = { "name": names[1], "id": sfuuid, "action": action}
+                        toSendJson = json.dumps(toSend)
+                        LOG.info(name + ": send new message to FSM " + names[1] + " " + toSendJson)
+
+                        mtdLiveWebSockets[sfuuid].write_message(toSendJson)
+        # deregistry
+        elif action == actions[3]:
+            for key, value in sonataAdaptorLiveWebSockets.items():
+                if self == value:
+                    sonataAdaptorLiveWebSockets.pop(key)
+                    LOG.info("Removed id: " + key)
+                    break
 
         else:
             LOG.warning("Action not recognized: " + action)

@@ -5,6 +5,7 @@ Database model
 {
     "<sliceName>": {
         "status": "<status>"
+        "fsm_name": "<fsm_name>"
     }
 }
 
@@ -29,6 +30,7 @@ class slice_database:
 
         slice_entry = dict()
         slice_entry["status"] = status
+        slice_entry["fsm_name"] = ""
         self.slice_db[name] = slice_entry
         self.lock.release()
 
@@ -50,6 +52,7 @@ class slice_database:
         if not name in self.slice_db:
             slice_entry = dict()
             slice_entry["status"] = status
+            slice_entry["fsm_name"] = ""
             self.slice_db[name] = slice_entry
             self.lock.release()
             return
@@ -59,6 +62,21 @@ class slice_database:
 
         self.lock.release()
 
+    def update_fsm_name_slice(self, fsm_name, name):
+        """ Updates the slice with that fsm_name for the given name """
+        self.lock.acquire()
+        if not name in self.slice_db:
+            slice_entry = dict()
+            slice_entry["status"] = "CONFIGURED"
+            slice_entry["fsm_name"] = fsm_name
+            self.slice_db[name] = slice_entry
+            self.lock.release()
+            return
+        #    raise ValueError("Error while updating slice \""+ name + "\": Not exists!") 
+
+        self.slice_db[name]["status"] = status
+
+        self.lock.release()
 
     def get_status_slice(self, name):
         """ Returns the status of slice """
@@ -68,6 +86,15 @@ class slice_database:
         #    raise ValueError("Error while geting status slice \""+ name + "\": Not exists!") 
 
         return self.slice_db[name]["status"]
+
+    def get_fsm_name_slice(self, name):
+        """ Returns the status of slice """
+
+        if not name in self.slice_db:
+            return None
+        #    raise ValueError("Error while geting status slice \""+ name + "\": Not exists!") 
+
+        return self.slice_db[name]["fsm_name"]
 
     def get_slice(self, name):
         """ Returns the slice (object) to perform operations in that slice """

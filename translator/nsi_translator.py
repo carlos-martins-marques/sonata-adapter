@@ -50,6 +50,7 @@ LOG.setLevel(logging.DEBUG)
 
 db = database.slice_database()
 
+
 ################################## THREADs to manage slice requests #################################
 # SEND NETWORK SLICE (NS) INSTANTIATION REQUEST
 ## Objctive: send request 2 GTK to instantiate 
@@ -332,7 +333,7 @@ class thread_ns_configure(Thread):
     LOG.info("Configurating Slice: ")
 
     # calls the function towards the GTK
-    configuration_response = sbi.ws_configure(self.NSI['parameters'])
+    configuration_response = sbi.ws_configure(self.NSI['parameters'], self.NSI['fsm_name'])
 
     return configuration_response[0], configuration_response[1]
   
@@ -525,9 +526,11 @@ def get_nsi(nsiName):
     nsirepo_jsonresponse = sbi.get_saved_nsi(uuid)
     if (nsirepo_jsonresponse):
 
-      #TODO If need to get data from ssm/fsm
-      if (True):
-        nsirepo_jsonresponse['parameters'] = sbi.ws_get_info(uuid)
+      #If need to get data from ssm/fsm
+      fsm_name = db.get_fsm_name_slice(nsiName)
+      if fsm_name is not None:
+        if (fsm_name != ""):
+          nsirepo_jsonresponse['parameters'] = sbi.ws_get_info(uuid,fsm_name)
 
       # Translate the response
       new_nsirepo_jsonresponse = translate_nsi_from_sonata_to_vs(nsiName, nsirepo_jsonresponse)
@@ -676,7 +679,14 @@ def configure_nsi(nsiName, nsi_json):
         # if nsi is in INSTANTIATED
         if configure_nsi['nsi-status'] in ["INSTANTIATED"]:
 
-          db.add_slice("CONFIGURING", nsiName)
+          db.update_status_slice("CONFIGURING", nsiName)
+          fsm_name=""
+          if (configure_nsi['parameters']['ruleId'] == "AddTunnelPeer"):
+            fsm_name="tunnel"
+          else:
+            fsm_name="mtd"
+          configure_nsi['fsm_name'] = fsm_name
+          db.update_fsm_name_slice(fsm_name,nsiName)
 
           configure_nsi['id'] = configure_nsi['uuid']
           del configure_nsi['uuid']
