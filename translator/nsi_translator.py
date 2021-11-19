@@ -681,9 +681,9 @@ def configure_nsi(nsiName, nsi_json):
 
           db.update_status_slice("CONFIGURING", nsiName)
           fsm_name=""
-          if (nsi_json['parameters']['ruleId'] == "AddTunnelPeer"):
+          if (nsi_json['parameters']['ruleName'] == "addpeer"):
             fsm_name="tunnel"
-          else:
+          elif (nsi_json['parameters']['ruleName'] == "activatemtd"):
             fsm_name="mtd"
           configure_nsi['fsm_name'] = fsm_name
           db.update_fsm_name_slice(fsm_name,nsiName)

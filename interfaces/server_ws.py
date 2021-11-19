@@ -53,7 +53,7 @@ LOG.setLevel(logging.DEBUG)
 
 ################################# SERVER WEB SOCKET #####################################
 
-names = [ 'tunnel', 'mtd', 'sonata_adaptor' ]
+names = [ 'tunnel', 'MTD', 'sonata_adaptor' ]
 actions = [ 'registry', 'config', 'get_config', 'deregistry']
 ssmId = {}
 tunnelLiveWebSockets = {}
@@ -189,7 +189,7 @@ class WSHandler(websocket.WebSocketHandler):
                         LOG.info(name + ": send new message to FSM " + names[0] + " " + toSendJson)
 
                         tunnelLiveWebSockets[sfuuid].write_message(toSendJson)
-                elif (messageDict['flag'] == names[1]): 
+                elif (messageDict['fsm'] == names[1]): 
                     for sfuuid in mtdLiveWebSockets:
                         
                         toSend = { "name": names[1], "id": sfuuid, "action": action}
