@@ -148,6 +148,7 @@ class Client():
                 break
 
 def connectPortal(url, argv):
+    global message_return
     message_return=""
     Client(url, argv)
     LOG.info("FINISHED")
