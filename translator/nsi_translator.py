@@ -196,7 +196,7 @@ class thread_ns_instantiate(Thread):
     
     
     # Notifies the VS that the Network Slice instantiation process is done (either complete or error)
-    LOG.info("Instantiation Step: Informing VS about the correct end of Network Slice with ID: "+str(self.NSI['id']))
+    #LOG.info("Instantiation Step: Informing VS about the correct end of Network Slice with ID: "+str(self.NSI['id']))
     self.update_nsi_notify_instantiate()
 
 
@@ -318,7 +318,7 @@ class thread_ns_terminate(Thread):
         self.NSI['errorLog'] = 'ERROR when terminating with timeout'
     
     # Notifies the VS that the Network Slice termination process is done (either complete or error)
-    LOG.info("Termination Step: Informing VS about the correct end of Network Slice with ID: "+str(self.NSI['id']))
+    #LOG.info("Termination Step: Informing about the correct end of Network Slice with ID: "+str(self.NSI['id']))
     self.update_nsi_notify_terminate()
 
 # SEND NETWORK SLICE (NS) CONFIGURATION REQUEST
@@ -371,7 +371,7 @@ class thread_ns_configure(Thread):
         self.NSI['errorLog'] = 'ERROR when configurating with timeout'
     
     # Notifies the VS that the Network Slice configuartion process is done (either complete or error)
-    LOG.info("Configuration Step: Informing VS about the correct end of Network Slice with ID: "+str(self.NSI['id']))
+    LOG.info("Configuration Step: Informing about the correct end of Network Slice with ID: "+str(self.NSI['id']))
     self.update_nsi_notify_configure()
 
 
@@ -384,7 +384,6 @@ def create_nsi(nsi_json):
    
   # creates NSI ID with the received information
   # This ID will be used as the name in the next interactions
-  LOG.info("Creating NSI record basic structure.")
   newNsiId = nsi_json['name'] + "-" + str(uuid.uuid4())
    
   # sending back the response

@@ -75,17 +75,14 @@ class WSHandler(websocket.WebSocketHandler):
         for key, value in tunnelLiveWebSockets.items():
             if self == value:
                 tunnelLiveWebSockets.pop(key)
-                LOG.info("Removed id: " + key)
                 break
         for key, value in mtdLiveWebSockets.items():
             if self == value:
                 mtdLiveWebSockets.pop(key)
-                LOG.info("Removed id: " + key)
                 break
         for key, value in sonataAdaptorLiveWebSockets.items():
             if self == value:
                 sonataAdaptorLiveWebSockets.pop(key)
-                LOG.info("Removed id: " + key)
                 break
     def check_origin(self, origin):
         return True
@@ -99,8 +96,6 @@ class WSHandler(websocket.WebSocketHandler):
         name = messageDict['name']
         id = messageDict['id']
         action = messageDict['action']
-
-        LOG.info("Received action: " + action)
 
         # registry
         if action == actions[0]:
@@ -162,7 +157,6 @@ class WSHandler(websocket.WebSocketHandler):
 
                 toSend = { "name": name, "id": id, "action": action, 
                         "message": "Configuration OK"}
-                LOG.info(name + ": tosend = " + str(toSend))
                 toSendJson = json.dumps(toSend)
                 LOG.info(name + ": send reply message to Sonata Adaptor " + toSendJson)
                 self.write_message(toSendJson)
@@ -210,7 +204,6 @@ class WSHandler(websocket.WebSocketHandler):
             for key, value in sonataAdaptorLiveWebSockets.items():
                 if self == value:
                     sonataAdaptorLiveWebSockets.pop(key)
-                    LOG.info("Removed id: " + key)
                     break
 
         else:

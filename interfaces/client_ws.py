@@ -65,8 +65,7 @@ class Client():
  
     def message_received(self, message):
         global message_return
-        LOG.info('message received...')
-        LOG.info("*********************Handling message: "+message)
+        LOG.info("*********************Message received: " + message)
         
         # Format message
         messageDict = json.loads(message)
@@ -119,8 +118,7 @@ class Client():
     @gen.coroutine
     def connect(self, argv=None):
 
-        LOG.info("connecting to websocket..." + self.url)
-        LOG.info("*********************Listening to Requests...!")
+        LOG.info("connecting to websocket..." + self.url + "*********************Listening to Requests...!")
         connecting = True
         while connecting:
             try:
