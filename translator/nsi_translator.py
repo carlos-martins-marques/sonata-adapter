@@ -527,6 +527,12 @@ def get_nsi(nsiName):
     if (nsirepo_jsonresponse):
 
       #If need to get data from ssm/fsm
+      # fsm_name=""
+      # if (nsi_json['parameters']['ruleName'] == "addpeer"):
+      #   fsm_name="tunnel"
+      # elif (nsi_json['parameters']['ruleName'] == "activatemtd"):
+      #   fsm_name="mtd"      
+
       fsm_name = db.get_fsm_name_slice(nsiName)
       if fsm_name is not None:
         if (fsm_name != ""):
@@ -684,7 +690,7 @@ def configure_nsi(nsiName, nsi_json):
           if (nsi_json['parameters']['ruleName'] == "addpeer"):
             fsm_name="tunnel"
           elif (nsi_json['parameters']['ruleName'] == "activatemtd"):
-            fsm_name="mtd"
+            fsm_name="MTD"
           configure_nsi['fsm_name'] = fsm_name
           db.update_fsm_name_slice(fsm_name,nsiName)
 
