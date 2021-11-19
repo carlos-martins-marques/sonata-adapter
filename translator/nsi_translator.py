@@ -635,7 +635,7 @@ def translate_nsi_from_sonata_to_vs(nsiName, nsi_sonata):
   if 'parameters' in nsi_sonata:
     nsi_vs['parameters'] = nsi_sonata['parameters']
   else:
-    nsi_vs['parameters'] = ""
+    nsi_vs['parameters'] = "{}"
 
   """ nsi_vs = nsi_sonata """
 
@@ -681,7 +681,7 @@ def configure_nsi(nsiName, nsi_json):
 
           db.update_status_slice("CONFIGURING", nsiName)
           fsm_name=""
-          if (configure_nsi['parameters']['ruleId'] == "AddTunnelPeer"):
+          if (nsi_json['parameters']['ruleId'] == "AddTunnelPeer"):
             fsm_name="tunnel"
           else:
             fsm_name="mtd"
