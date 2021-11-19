@@ -226,7 +226,7 @@ def ws_get_info(sliceUuid, fsm_name):
   if 'parameters' in messageDict:
     return (messageDict['parameters'])
   else:
-    return messageDict
+    return "{}"
 
 
 ################################# NETWORK SLICE DESCRIPTORS #####################################

@@ -90,7 +90,7 @@ class Client():
         except Exception as e:
             LOG.error("Exception: " + str(e))
 
-    def deregister(self):
+    def stop(self):
         try:
             toSend = {"name":"sonata_adaptor", "id":str(uuid.uuid4()), "action":"deregistry"}
             toSendJson = json.dumps(toSend)
@@ -99,6 +99,8 @@ class Client():
 
         except Exception as e:
             LOG.error("Exception: " + str(e))
+        
+        self.ioloop.stop()
 
     """
     def reply_to_portal(self, name , id, action):
@@ -118,7 +120,7 @@ class Client():
     def connect(self, argv=None):
 
         LOG.info("connecting to websocket..." + self.url)
-        logging.warning("*********************Listening to Requests...!")
+        LOG.warn("*********************Listening to Requests...!")
         connecting = True
         while connecting:
             try:
@@ -136,17 +138,17 @@ class Client():
 
     @gen.coroutine
     def run(self):
-        self.ioloop.add_timeout(datetime.timedelta(seconds=10), self.ioloop.stop)
+        self.ioloop.add_timeout(datetime.timedelta(seconds=10), self.stop)
         while True:
             msg = yield self.ws.read_message()
             if msg is not None:
                 LOG.info("received message: " + str(msg))
                 self.message_received(msg)
-                self.deregister()
-                self.ioloop.stop()
+                self.stop()
                 break
 
 def connectPortal(url, argv):
+    message_return=""
     Client(url, argv)
     LOG.info("FINISHED")
     return message_return
