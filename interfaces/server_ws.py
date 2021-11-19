@@ -179,6 +179,14 @@ class WSHandler(websocket.WebSocketHandler):
                     LOG.info(name + ": send reply message to Sonata Adaptor" + toSendJson)
 
                     sonataAdaptorLiveWebSockets[id].write_message(toSendJson)
+            elif name == names[1]:
+                for id in sonataAdaptorLiveWebSockets:
+                    
+                    toSend = { "name": names[2], "id": id, "action": actions[2], "parameters": messageDict['parameters']}
+                    toSendJson = json.dumps(toSend)
+                    LOG.info(name + ": send reply message to Sonata Adaptor" + toSendJson)
+
+                    sonataAdaptorLiveWebSockets[id].write_message(toSendJson)
             # If the sender is the Sonata Adaptor
             elif name == names[2]:
                 if (messageDict['fsm'] == names[0]): 

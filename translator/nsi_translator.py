@@ -716,7 +716,8 @@ def configure_nsi(nsiName, nsi_json):
             thread_ns_configuration.join()
             configure_value = 202
 
-            db.update_status_slice("CONFIGURED", nsiName)  
+            db.update_status_slice("CONFIGURED", nsiName)
+            db.update_fsm_name_slice("",nsiName)  
         else:
           configure_nsi['errorLog'] = "This NSI is not in instantiated or configurated status."
           configure_value = 404
