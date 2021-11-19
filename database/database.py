@@ -74,7 +74,7 @@ class slice_database:
             return
         #    raise ValueError("Error while updating slice \""+ name + "\": Not exists!") 
 
-        self.slice_db[name]["status"] = status
+        self.slice_db[name]["fsm_name"] = fsm_name
 
         self.lock.release()
 
