@@ -41,6 +41,9 @@ import translator.nsi_translator as nsi_translator
 import interfaces.validate_incoming_json as json_validator
 from logger import TangoLogger
 
+log = logging.getLogger("werkzeug")
+log.disabled = True
+
 #Log definition to make the slice logs idetified among the other possible 5GTango components.
 LOG = TangoLogger.getLogger(__name__, log_level=logging.DEBUG, log_json=True)
 TangoLogger.getLogger("sonataAdapter:nbi", logging.DEBUG, log_json=True)
