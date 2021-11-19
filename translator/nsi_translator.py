@@ -524,14 +524,7 @@ def get_nsi(nsiName):
   if (uuid):
     LOG.info("Retrieving Network Slice Instance with ID: " +str(uuid))
     nsirepo_jsonresponse = sbi.get_saved_nsi(uuid)
-    if (nsirepo_jsonresponse):
-
-      #If need to get data from ssm/fsm
-      # fsm_name=""
-      # if (nsi_json['parameters']['ruleName'] == "addpeer"):
-      #   fsm_name="tunnel"
-      # elif (nsi_json['parameters']['ruleName'] == "activatemtd"):
-      #   fsm_name="mtd"      
+    if (nsirepo_jsonresponse): 
 
       fsm_name = db.get_fsm_name_slice(nsiName)
       if fsm_name is not None:
@@ -685,33 +678,45 @@ def configure_nsi(nsiName, nsi_json):
         # if nsi is in INSTANTIATED
         if configure_nsi['nsi-status'] in ["INSTANTIATED"]:
 
-          db.update_status_slice("CONFIGURING", nsiName)
+          #If the config is for receive information, only update the db
           fsm_name=""
-          if (nsi_json['parameters']['ruleName'] == "addpeer"):
+          if (nsi_json['parameters']['ruleName'] == "getvnfinfo"):
             fsm_name="tunnel"
-          elif (nsi_json['parameters']['ruleName'] == "activatemtd"):
+            db.update_status_slice("CONFIGURING", nsiName)
+            db.update_fsm_name_slice(fsm_name,nsiName)
+            configure_value = 201
+          elif (nsi_json['parameters']['ruleName'] == "getmtdinfo"):
             fsm_name="MTD"
-          configure_nsi['fsm_name'] = fsm_name
-          db.update_fsm_name_slice(fsm_name,nsiName)
+            db.update_status_slice("CONFIGURING", nsiName)
+            db.update_fsm_name_slice(fsm_name,nsiName)
+            configure_value = 201
 
-          configure_nsi['id'] = configure_nsi['uuid']
-          del configure_nsi['uuid']
-        
-          configure_nsi['configureTime'] = str(datetime.datetime.now().isoformat())
-          #configure_nsi['sliceCallback'] = nsiName['callback']
-          configure_nsi['nsi-status'] = "CONFIGURING"
+            #If the config is for configure the fsm start the thread
+          else:
+            if (nsi_json['parameters']['ruleName'] == "addpeer"):
+              fsm_name="tunnel"
+            elif (nsi_json['parameters']['ruleName'] == "activatemtd"):
+              fsm_name="MTD"
+            configure_nsi['fsm_name'] = fsm_name
+            
+            configure_nsi['id'] = configure_nsi['uuid']
+            del configure_nsi['uuid']
+          
+            configure_nsi['configureTime'] = str(datetime.datetime.now().isoformat())
+            #configure_nsi['sliceCallback'] = nsiName['callback']
+            configure_nsi['nsi-status'] = "CONFIGURING"
 
-          # Add parameters information from json request
-          configure_nsi['parameters'] = nsi_json['parameters']
+            # Add parameters information from json request
+            configure_nsi['parameters'] = nsi_json['parameters']
 
-          # starts the thread to configure while sending back the response
-          LOG.info("Starting the configuration procedure.")
-          thread_ns_configuration = thread_ns_configure(configure_nsi)
-          thread_ns_configuration.start()
-          thread_ns_configuration.join()
-          configure_value = 202
+            # starts the thread to configure while sending back the response
+            LOG.info("Starting the configuration procedure.")
+            thread_ns_configuration = thread_ns_configure(configure_nsi)
+            thread_ns_configuration.start()
+            thread_ns_configuration.join()
+            configure_value = 202
 
-          db.update_status_slice("CONFIGURED", nsiName)  
+            db.update_status_slice("CONFIGURED", nsiName)  
         else:
           configure_nsi['errorLog'] = "This NSI is not in instantiated or configurated status."
           configure_value = 404
