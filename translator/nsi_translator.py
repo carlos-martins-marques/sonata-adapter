@@ -694,6 +694,8 @@ def configure_nsi(nsiName, nsi_json):
           else:
             if (nsi_json['parameters']['ruleName'] == "addpeer"):
               fsm_name="tunnel"
+            elif (nsi_json['parameters']['ruleName'] == "routemgmt"):
+              fsm_name="tunnel"
             elif (nsi_json['parameters']['ruleName'] == "activatemtd"):
               fsm_name="MTD"
             configure_nsi['fsm_name'] = fsm_name
