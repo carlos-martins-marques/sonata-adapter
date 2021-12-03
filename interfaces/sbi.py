@@ -219,16 +219,19 @@ def get_nsi_id_from_name(name):
 # Web socket to send requests to FSM/SSM, to CONFIGURE Network Slice instance
 def ws_configure(parameters, fsm_name):
 
-  # TODO
   dict_message={"name":"sonata_adaptor", "id":str(uuid.uuid4()), "action":"config", "fsm":fsm_name, "parameters":str(parameters)}
 
   messageDict = client_ws_thread(dict_message)
-  return ({"message": messageDict['message']},202)
+  if 'message' in messageDict:
+    return ({"message": messageDict['message']},202)
+  else:
+    return ({"message": "Timeout"},400)
+  
 
 
 # Web socket to send requests to FSM/SSM, to get information from VNF of Network Slice instance
 def ws_get_info(sliceUuid, fsm_name):
-  # TODO
+
   dict_message={"name":"sonata_adaptor", "id":str(uuid.uuid4()), "action":"get_config", "fsm":fsm_name}
 
   messageDict = client_ws_thread(dict_message)
