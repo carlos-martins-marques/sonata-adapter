@@ -39,6 +39,7 @@ import logging, json, datetime
 
 import translator.nsi_translator as nsi_translator
 import interfaces.validate_incoming_json as json_validator
+import interfaces.sbi as sbi
 from logger import TangoLogger
 
 log = logging.getLogger("werkzeug")
@@ -121,12 +122,17 @@ def delete_slice_template(nstId):
 def create_slice_identifier():
   LOG.info("Request to create a Network Slice Identifier with the following information: " + str(request.json))
   
+  timestamp = str(datetime.datetime.now().isoformat())
+
   # validates the fields with uuids (if they are right UUIDv4 format), 400 Bad request / 201 ok
   creating_nsiId = json_validator.validate_create_instantiation(request.json)
   
   if (creating_nsiId[1] == 200):
     creating_nsiId = nsi_translator.create_nsi(request.json)
   
+  sbi.send_metrics(creating_nsiId[0], 'start', 'creation', timestamp)
+  sbi.send_metrics(creating_nsiId[0], 'stop', 'creation')
+
   return jsonify(creating_nsiId[0]), creating_nsiId[1]
 
 
@@ -134,7 +140,8 @@ def create_slice_identifier():
 @app.route(API_ROOT+API_VERSION+API_NS+'/<name>/action/instantiate', methods=['PUT'])
 def instantiate_slice_instance(name):
   LOG.info("Request to create a Network Slice Instantiation with the following information: " + str(request.json))
-  
+  sbi.send_metrics(name, 'start', 'instantiation')
+
   # validates the fields with uuids (if they are right UUIDv4 format), 400 Bad request / 201 ok
   instantiating_nsi = json_validator.validate_instantiate_instantiation(request.json)
   
@@ -147,7 +154,8 @@ def instantiate_slice_instance(name):
 @app.route(API_ROOT+API_VERSION+API_NS+'/<name>/action/terminate', methods=['PUT'])
 def terminate_slice_instance(name):
   LOG.info("Request to terminate the Network Slice Instantiation according to the following: " + str(request.json))
-  
+  sbi.send_metrics(name, 'start', 'termination')
+
   # validates the fields with uuids (if they are right UUIDv4 format), 400 Bad request / 200 ok
   terminating_nsi = json_validator.validate_terminate_instantiation(request.json)
   
@@ -161,6 +169,7 @@ def terminate_slice_instance(name):
 @app.route(API_ROOT+API_VERSION+API_NS, methods=['GET'])
 def get_all_slice_instances():
   LOG.info("Request to retreive all the Network Slice Instantiations.")
+
   allNSI = nsi_translator.get_all_nsi()
 
   return jsonify(allNSI[0]), allNSI[1]
@@ -169,21 +178,31 @@ def get_all_slice_instances():
 @app.route(API_ROOT+API_VERSION+API_NS+'/<name>', methods=['GET'])
 def get_slice_instance(name):
   LOG.info("Request to retrieve the Network Slice Instantiation with Name: " + str(name))
+  sbi.send_metrics(name, 'start', 'query')
+
   returnedNSI = nsi_translator.get_nsi(str(name))
 
+  sbi.send_metrics(name, 'stop', 'query')
   return jsonify(returnedNSI[0]), returnedNSI[1]
 
 # Configure a NetSlice instances (NSI)
 @app.route(API_ROOT+API_VERSION+API_NS+'/<name>/action/configure', methods=['PUT'])
 def configure_slice_instance(name):
   LOG.info("Request to configure a Network Slice Instantiation with the following information: " + str(request.json))
-  
+  sbi.send_metrics(name, 'start', request.json['parameters']['ruleName'])
+
   # validates the fields with uuids (if they are right UUIDv4 format), 400 Bad request / 201 ok
   configuring_nsi = json_validator.validate_configure_instantiation(request.json)
   
   if (configuring_nsi[1] == 200):
     configuring_nsi = nsi_translator.configure_nsi(name, request.json)
   
+
+  if (request.json['parameters']['ruleName'] == "getvnfinfo"):
+    sbi.send_metrics(name, 'stop', request.json['parameters']['ruleName'])
+  elif (request.json['parameters']['ruleName'] == "getmtdinfo"):
+    sbi.send_metrics(name, 'stop', request.json['parameters']['ruleName'])
+
   return jsonify(configuring_nsi[0]), configuring_nsi[1]
 
 

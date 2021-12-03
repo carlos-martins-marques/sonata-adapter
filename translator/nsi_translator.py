@@ -79,6 +79,9 @@ class thread_ns_instantiate(Thread):
     return instantiation_response
 
   def update_nsi_notify_instantiate(self):
+
+    sbi.send_metrics(str(self.NSI['name']), 'stop', 'instantiation')
+
     """     mutex_slice2db_access.acquire()
     try:
       jsonNSI = self.NSI
@@ -187,8 +190,8 @@ class thread_ns_instantiate(Thread):
             LOG.info("Network Slice Instantiation request processed for Network Slice with ID: "+str(self.NSI['id']))
             break
     
-        time.sleep(15)
-        deployment_timeout -= 15
+        time.sleep(5)
+        deployment_timeout -= 5
     
       if not nsi_instantiated:
         self.NSI['nsi-status'] = 'ERROR'
@@ -221,7 +224,10 @@ class thread_ns_terminate(Thread):
     return termination_response[0], termination_response[1]
   
   def update_nsi_notify_terminate(self):
-   """  mutex_slice2db_access.acquire()
+
+    sbi.send_metrics(str(self.NSI['name']), 'stop', 'termination')
+
+    """  mutex_slice2db_access.acquire()
     try:
       jsonNSI = nsi_repo.get_saved_nsi(self.NSI['id'])
       jsonNSI["id"] = jsonNSI["uuid"]
@@ -310,8 +316,8 @@ class thread_ns_terminate(Thread):
           LOG.info("Network Slice Termination request processed for Network Slice with ID: "+str(self.NSI['id']))
           break
     
-        time.sleep(15)
-        deployment_timeout -= 15
+        time.sleep(5)
+        deployment_timeout -= 5
     
       if not nsi_terminated:
         self.NSI['nsi-status'] = 'ERROR'
@@ -338,19 +344,20 @@ class thread_ns_configure(Thread):
     return configuration_response[0], configuration_response[1]
   
   def update_nsi_notify_configure(self):
-   """  """
+    sbi.send_metrics(self.NSI['name'], 'stop', self.NSI['parameters']['ruleName'])
+  
 
   def run(self):
 
-    # acquires mutex to have unique access to the nsi (rpositories)
+    # acquires mutex to have unique access to the nsi (repositories)
     mutex_slice2db_access.acquire()
     
     # sends each of the termination requests
     LOG.info("Configuration Step: Configuring Network Slice Instantiation.")
 
     # requests to configure a NSI
-    configuraion_resp = self.send_configuration_requests()
-    if configuraion_resp[1] != 202:
+    configuration_resp = self.send_configuration_requests()
+    if configuration_resp[1] != 202:
       self.NSI['nsi-status'] = 'ERROR'
       self.NSI['errorLog'] = 'ERROR when configuring '
 
@@ -476,7 +483,7 @@ def terminate_nsi(nsiName, TerminOrder):
   #LOG.info("Updating the Network Slice Record for the termination procedure.")
   mutex_slice2db_access.acquire()
   try:
-    # Get the uuid form the name provided
+    # Get the uuid from the name provided
     uuid = sbi.get_nsi_id_from_name(nsiName)
     if (uuid):
       terminate_nsi = sbi.get_saved_nsi(uuid)
@@ -518,7 +525,7 @@ def terminate_nsi(nsiName, TerminOrder):
 ############################################ NSI GET SECTION ############################################
 # Gets one single NSI item information
 def get_nsi(nsiName):
-  # Get the uuid form the name provided
+  # Get the uuid from the name provided
   uuid = sbi.get_nsi_id_from_name(nsiName)
   if (uuid):
     LOG.info("Retrieving Network Slice Instance with ID: " +str(uuid))
@@ -669,7 +676,7 @@ def configure_nsi(nsiName, nsi_json):
   #LOG.info("Updating the Network Slice Record for the configuration procedure.")
   #mutex_slice2db_access.acquire()
   try:
-    # Get the uuid form the name provided
+    # Get the uuid from the name provided
     uuid = sbi.get_nsi_id_from_name(nsiName)
     if (uuid):
       configure_nsi = sbi.get_saved_nsi(uuid)

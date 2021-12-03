@@ -47,6 +47,9 @@ ENV SONATA_REP_PORT 4012
 ENV SONATA_CAT tng-cat
 ENV SONATA_CAT_PORT 4011
 
+ENV METRICS_IP 127.0.0.1
+ENV METRICS_PORT 80
+
 #Preparing directory
 ADD . /sonata_adapter
 WORKDIR /sonata_adapter

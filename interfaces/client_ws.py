@@ -56,7 +56,8 @@ message_return = ""
 class Client():
     
     def __init__(self, url, argv):
-        self.url = url       
+        self.url = url
+        self.argv = argv       
         asyncio.set_event_loop(asyncio.new_event_loop())
         self.ioloop = ioloop.IOLoop.instance()
         self.connect(argv)
@@ -69,8 +70,15 @@ class Client():
         
         # Format message
         messageDict = json.loads(message)
+
+        # If message received don't have the same action, discard
+        if messageDict['action'] != self.argv['action']:
+            return False
+
         #message = messageDict['message']
         message_return = messageDict
+
+        return True
 
     def register(self, argv):
         try:
@@ -141,9 +149,9 @@ class Client():
             msg = yield self.ws.read_message()
             if msg is not None:
                 LOG.info("received message: " + str(msg))
-                self.message_received(msg)
-                self.stop()
-                break
+                if self.message_received(msg):
+                    self.stop()
+                    break
 
 def connectPortal(url, argv):
     global message_return

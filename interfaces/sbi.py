@@ -39,6 +39,7 @@ import os, requests, json, logging
 import asyncio
 
 import time
+import datetime
 
 import uuid
 
@@ -84,6 +85,14 @@ def get_url_repositories():
     base_url = 'http://'+ip_address+':'+port
     return base_url
 
+# Prepares the URL_requests to send metrics data information
+def get_url_metrics():
+  ip_address = os.environ.get("METRICS_IP")
+  port = os.environ.get("METRICS_PORT")
+  #ip_address = "193.136.92.119"
+  #port = "4011"
+  base_url = 'http://'+ip_address+':'+port
+  return base_url
 
 ##################################### VIM NETWORKS MANAGEMENT REQUESTS ##############################
 '''
@@ -286,3 +295,15 @@ def delete_nst(nstId):
     
     return response
   
+
+  ################################ METRICS DATA INFORMATION ##################################
+# POST  to send Metrics Data Information
+def send_metrics(nsiId, action, stage, timestamp=None):
+
+  if not timestamp:
+    timestamp=str(datetime.datetime.now().isoformat())
+  url = get_url_metrics() + '/SONATA/' + nsiId + '/' + action + '/' + stage + '/' + timestamp
+
+  response = requests.get(url, headers=JSON_CONTENT_HEADER)
+  
+  return response.status_code

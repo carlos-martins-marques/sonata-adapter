@@ -116,25 +116,25 @@ class WSHandler(websocket.WebSocketHandler):
             #TODO 
             # If the sender is the FSM Tunnel
             if name == names[0]:
-                #for id in sonataAdaptorLiveWebSockets:
+                for id in sonataAdaptorLiveWebSockets:
                     
-                #    toSend = { "name": names[1], "id": id, "action": actions[2], "message": "Configuration OK"}
-                #    toSendJson = json.dumps(toSend)
-                #    LOG.info(name + ": send reply message to Sonata Adaptor " + toSendJson)
+                   toSend = { "name": names[2], "id": id, "action": action, "message": "Configuration OK"}
+                   toSendJson = json.dumps(toSend)
+                   LOG.info(name + ": send reply message to Sonata Adaptor " + toSendJson)
 
-                #    sonataAdaptorLiveWebSockets[id].write_message(toSendJson)
-                LOG.info(name + ": don't send reply message to Sonata Adaptor ")
+                   sonataAdaptorLiveWebSockets[id].write_message(toSendJson)
+                #LOG.info(name + ": don't send reply message to Sonata Adaptor ")
 
             # If the sender is the FSM MTD
             elif name == names[1]:
-                #for id in sonataAdaptorLiveWebSockets:
+                for id in sonataAdaptorLiveWebSockets:
                     
-                #    toSend = { "name": names[1], "id": id, "action": actions[2], "message": "Configuration OK"}
-                #    toSendJson = json.dumps(toSend)
-                #    LOG.info(name + ": send reply message to Sonata Adaptor " + toSendJson)
+                   toSend = { "name": names[2], "id": id, "action": action, "message": "Configuration OK"}
+                   toSendJson = json.dumps(toSend)
+                   LOG.info(name + ": send reply message to Sonata Adaptor " + toSendJson)
 
-                #    sonataAdaptorLiveWebSockets[id].write_message(toSendJson)
-                LOG.info(name + ": don't send reply message to Sonata Adaptor ")
+                   sonataAdaptorLiveWebSockets[id].write_message(toSendJson)
+                #LOG.info(name + ": don't send reply message to Sonata Adaptor ")
 
             # If the sender is the Sonata Adaptor
             elif name == names[2]:
@@ -155,11 +155,11 @@ class WSHandler(websocket.WebSocketHandler):
 
                         mtdLiveWebSockets[sfuuid].write_message(toSendJson)
 
-                toSend = { "name": name, "id": id, "action": action, 
-                        "message": "Configuration OK"}
-                toSendJson = json.dumps(toSend)
-                LOG.info(name + ": send reply message to Sonata Adaptor " + toSendJson)
-                self.write_message(toSendJson)
+                # toSend = { "name": name, "id": id, "action": action, 
+                #         "message": "Configuration OK"}
+                # toSendJson = json.dumps(toSend)
+                # LOG.info(name + ": send reply message to Sonata Adaptor " + toSendJson)
+                # self.write_message(toSendJson)
 
         # get configuration
         elif action == actions[2]:
