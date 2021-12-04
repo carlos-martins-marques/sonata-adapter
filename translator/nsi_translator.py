@@ -187,7 +187,7 @@ class thread_ns_instantiate(Thread):
           
           # if all services are instantiated, ready or error, break the while loop to notify the GTK
           if nsi_instantiated:
-            LOG.info("Network Slice Instantiation request processed for Network Slice with ID: "+str(self.NSI['id']))
+            LOG.info("Network Slice Instantiation request processed for Network Slice with Name: "+str(self.NSI['name']))
             break
     
         time.sleep(5)
@@ -313,7 +313,7 @@ class thread_ns_terminate(Thread):
         
         # if slice is terminated or error, break the while loop to notify the GTK
         if nsi_terminated:
-          LOG.info("Network Slice Termination request processed for Network Slice with ID: "+str(self.NSI['id']))
+          LOG.info("Network Slice Termination request processed for Network Slice with Name: "+str(self.NSI['name']))
           break
     
         time.sleep(5)
@@ -350,7 +350,7 @@ class thread_ns_configure(Thread):
   def run(self):
 
     # acquires mutex to have unique access to the nsi (repositories)
-    mutex_slice2db_access.acquire()
+    #mutex_slice2db_access.acquire()
     
     # sends each of the termination requests
     LOG.info("Configuration Step: Configuring Network Slice Instantiation.")
@@ -363,7 +363,7 @@ class thread_ns_configure(Thread):
 
     
     # releases mutex for any other thread to acquire it
-    mutex_slice2db_access.release()
+    #mutex_slice2db_access.release()
 
     if self.NSI['nsi-status'] != 'ERROR':
         
@@ -371,14 +371,14 @@ class thread_ns_configure(Thread):
       nsi_configurated = True
       
       # if slice is configurated or error, break the while loop to notify the GTK
-      LOG.info("Network Slice Configuration request processed for Network Slice with ID: "+str(self.NSI['id']))
+      LOG.info("Network Slice Configuration request processed for Network Slice with Name: "+str(self.NSI['name']))
     
       if not nsi_configurated:
         self.NSI['nsi-status'] = 'ERROR'
         self.NSI['errorLog'] = 'ERROR when configurating with timeout'
     
     # Notifies the VS that the Network Slice configuartion process is done (either complete or error)
-    LOG.info("Configuration Step: Informing about the correct end of Network Slice with ID: "+str(self.NSI['id']))
+    #LOG.info("Configuration Step: Informing about the correct end of Network Slice with Name: "+str(self.NSI['name']))
     self.update_nsi_notify_configure()
 
 
