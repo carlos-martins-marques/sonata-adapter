@@ -169,27 +169,34 @@ def terminate_slice_instance(name):
 @app.route(API_ROOT+API_VERSION+API_NS, methods=['GET'])
 def get_all_slice_instances():
   LOG.info("Request to retreive all the Network Slice Instantiations.")
+  sbi.send_metrics('all_slices', 'start', 'query')
 
   allNSI = nsi_translator.get_all_nsi()
 
+  sbi.send_metrics('all_slices', 'stop', 'query')
   return jsonify(allNSI[0]), allNSI[1]
 
 # GETS a SPECIFIC NetSlice instances (NSI) information
 @app.route(API_ROOT+API_VERSION+API_NS+'/<name>', methods=['GET'])
 def get_slice_instance(name):
   LOG.info("Request to retrieve the Network Slice Instantiation with Name: " + str(name))
-  sbi.send_metrics(name, 'start', 'query')
+  timestamp = str(datetime.datetime.now().isoformat())
 
-  returnedNSI = nsi_translator.get_nsi(str(name))
+  returnedNSI = nsi_translator.get_nsi(str(name), timestamp)
 
-  sbi.send_metrics(name, 'stop', 'query')
+  sbi.send_metrics(name, 'stop', returnedNSI[2])
   return jsonify(returnedNSI[0]), returnedNSI[1]
 
 # Configure a NetSlice instances (NSI)
 @app.route(API_ROOT+API_VERSION+API_NS+'/<name>/action/configure', methods=['PUT'])
 def configure_slice_instance(name):
   LOG.info("Request to configure a Network Slice Instantiation with the following information: " + str(request.json))
-  sbi.send_metrics(name, 'start', request.json['parameters']['ruleName'])
+  if (request.json['parameters']['ruleName'] == "getvnfinfo"):
+    sbi.send_metrics(name, 'start', 'config')
+  elif (request.json['parameters']['ruleName'] == "getmtdinfo"):
+    sbi.send_metrics(name, 'start', 'config')
+  else:
+    sbi.send_metrics(name, 'start', request.json['parameters']['ruleName'])
 
   # validates the fields with uuids (if they are right UUIDv4 format), 400 Bad request / 201 ok
   configuring_nsi = json_validator.validate_configure_instantiation(request.json)
@@ -199,9 +206,9 @@ def configure_slice_instance(name):
   
 
   if (request.json['parameters']['ruleName'] == "getvnfinfo"):
-    sbi.send_metrics(name, 'stop', request.json['parameters']['ruleName'])
+    sbi.send_metrics(name, 'stop', 'config')
   elif (request.json['parameters']['ruleName'] == "getmtdinfo"):
-    sbi.send_metrics(name, 'stop', request.json['parameters']['ruleName'])
+    sbi.send_metrics(name, 'stop', 'config')
 
   return jsonify(configuring_nsi[0]), configuring_nsi[1]
 

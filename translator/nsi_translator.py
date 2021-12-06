@@ -524,8 +524,9 @@ def terminate_nsi(nsiName, TerminOrder):
 
 ############################################ NSI GET SECTION ############################################
 # Gets one single NSI item information
-def get_nsi(nsiName):
+def get_nsi(nsiName, timestamp):
   # Get the uuid from the name provided
+  name = 'query'
   uuid = sbi.get_nsi_id_from_name(nsiName)
   if (uuid):
     LOG.info("Retrieving Network Slice Instance with ID: " +str(uuid))
@@ -535,19 +536,25 @@ def get_nsi(nsiName):
       fsm_name = db.get_fsm_name_slice(nsiName)
       if fsm_name is not None:
         if (fsm_name != ""):
+          if (fsm_name == "tunnel"):
+            name="getvnfinfo"
+          elif (fsm_name == "MTD"):
+            name="getmtdinfo"
+
+          sbi.send_metrics(nsiName, 'start', name, timestamp)
           nsirepo_jsonresponse['parameters'] = sbi.ws_get_info(uuid,fsm_name)
 
       # Translate the response
       new_nsirepo_jsonresponse = translate_nsi_from_sonata_to_vs(nsiName, nsirepo_jsonresponse)
-      return (new_nsirepo_jsonresponse, 200)
+      return (new_nsirepo_jsonresponse, 200, name)
     else:
       return_msg = {}
       return_msg['msg'] = "There are no NSIR with this uuid in the db."
-      return (return_msg, 404)
+      return (return_msg, 404, name)
   else:
       return_msg = {}
       return_msg['msg'] = "There are no NSIR with this uuid in the db."
-      return (return_msg, 404)
+      return (return_msg, 404, name)
 
 # Gets all the existing NSI items
 def get_all_nsi():
