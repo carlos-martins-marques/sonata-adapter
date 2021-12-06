@@ -190,8 +190,8 @@ class thread_ns_instantiate(Thread):
             LOG.info("Network Slice Instantiation request processed for Network Slice with Name: "+str(self.NSI['name']))
             break
     
-        time.sleep(5)
-        deployment_timeout -= 5
+        time.sleep(1)
+        deployment_timeout -= 1
     
       if not nsi_instantiated:
         self.NSI['nsi-status'] = 'ERROR'
@@ -316,8 +316,8 @@ class thread_ns_terminate(Thread):
           LOG.info("Network Slice Termination request processed for Network Slice with Name: "+str(self.NSI['name']))
           break
     
-        time.sleep(5)
-        deployment_timeout -= 5
+        time.sleep(1)
+        deployment_timeout -= 1
     
       if not nsi_terminated:
         self.NSI['nsi-status'] = 'ERROR'
@@ -540,18 +540,19 @@ def get_nsi(nsiName, timestamp):
             name="getvnfinfo"
           elif (fsm_name == "MTD"):
             name="getmtdinfo"
-
-          sbi.send_metrics(nsiName, 'start', name, timestamp)
           nsirepo_jsonresponse['parameters'] = sbi.ws_get_info(uuid,fsm_name)
 
+      sbi.send_metrics(nsiName, 'start', name, timestamp)
       # Translate the response
       new_nsirepo_jsonresponse = translate_nsi_from_sonata_to_vs(nsiName, nsirepo_jsonresponse)
       return (new_nsirepo_jsonresponse, 200, name)
     else:
+      sbi.send_metrics(nsiName, 'start', name, timestamp)
       return_msg = {}
       return_msg['msg'] = "There are no NSIR with this uuid in the db."
       return (return_msg, 404, name)
   else:
+      sbi.send_metrics(nsiName, 'start', name, timestamp)
       return_msg = {}
       return_msg['msg'] = "There are no NSIR with this uuid in the db."
       return (return_msg, 404, name)
