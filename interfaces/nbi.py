@@ -133,7 +133,8 @@ def create_slice_identifier():
   sbi.send_metrics(creating_nsiId[0], 'start', 'creation', timestamp)
   sbi.send_metrics(creating_nsiId[0], 'stop', 'creation')
 
-  return jsonify(creating_nsiId[0]), creating_nsiId[1]
+  #return jsonify(creating_nsiId[0]), creating_nsiId[1]
+  return app.response_class( creating_nsiId[0], mimetype=app.config["JSONIFY_MIMETYPE"]), creating_nsiId[1]
 
 
 # INSTANTIATE a NetSlice instance (NSI)
