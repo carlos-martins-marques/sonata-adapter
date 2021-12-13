@@ -713,6 +713,8 @@ def configure_nsi(nsiName, nsi_json):
               fsm_name="tunnel"
             elif (nsi_json['parameters']['ruleName'] == "activatemtd"):
               fsm_name="MTD"
+            elif (nsi_json['parameters']['ruleName'] == "modifymtd"):
+              fsm_name="MTD"
             configure_nsi['fsm_name'] = fsm_name
             
             configure_nsi['id'] = configure_nsi['uuid']
